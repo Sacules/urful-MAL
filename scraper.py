@@ -1,23 +1,32 @@
 from manga import *
+import time
 
-# Testing
+author_url = "https://myanimelist.net/people/2410/Junji_Ito"
+
+# Get webpage
+r = requests.get(author_url)
+
+# Get the HTML and make it soup
+soup = BeautifulSoup(r.text, "html.parser")
+
+# Get the content table
+content = soup.find(id="content")
+
+# Get the table with mangas
+manga_list = (content.find(string="Published Manga").parent.next_sibling.
+              find_all("tr"))
+
 mango_list = []
-test_list = ["https://myanimelist.net/manga/20375/Black_Paradox",
-             "https://myanimelist.net/manga/90477/Ghost_Heights_Kanri_Kumiai",
-             "https://myanimelist.net/manga/909/Gyo__Ugomeku_Bukimi",
-             "https://myanimelist.net/manga/66425/Kai_Sasu",
-             "https://myanimelist.net/manga/82195/Masei",
-             "https://myanimelist.net/manga/912/Tomie",
-             "https://myanimelist.net/manga/436/Uzumaki"
-             ]
+counter = 1
 
-for link in test_list:
-    mango = Manga(link)
-    mango_list.append(mango)
+for manga in manga_list:
+    name = manga.contents[3].a.text
+    link = manga.find("a").get("href")
+        
+    mango = Manga(link, name)
 
-mango_list.sort(key=lambda z: z.score, reverse=True)
-
-for mango in mango_list:
-    mango.printData()
-    print()
+    print("\nProcessing", counter, "out of", len(manga_list), "\n")
+    counter += 1
     
+    mango_list.append(mango)
+    mango.printData()
