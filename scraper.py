@@ -1,32 +1,87 @@
 from manga import *
 import time
 
-author_url = "https://myanimelist.net/people/2410/Junji_Ito"
-
-# Get webpage
-r = requests.get(author_url)
-
-# Get the HTML and make it soup
-soup = BeautifulSoup(r.text, "html.parser")
-
-# Get the content table
-content = soup.find(id="content")
-
-# Get the table with mangas
-manga_list = (content.find(string="Published Manga").parent.next_sibling.
-              find_all("tr"))
-
-mango_list = []
-counter = 1
-
-for manga in manga_list:
-    name = manga.contents[3].a.text
-    link = manga.find("a").get("href")
-        
-    mango = Manga(link, name)
-
-    print("\nProcessing", counter, "out of", len(manga_list), "\n")
-    counter += 1
+def get_mangas(author_url):
+    # Get webpage
+    r = requests.get(author_url)
     
-    mango_list.append(mango)
-    mango.printData()
+    # Get the HTML and make it soup
+    soup = BeautifulSoup(r.text, "html.parser")
+    
+    # Get the content table
+    content = soup.find(id="content")
+    
+    # Get the table with mangas
+    manga_table = (content.find(string="Published Manga").parent.next_sibling.
+                  find_all("tr"))
+    
+    # Initialize
+    manga_list = []
+
+    # Add mangas to list
+    for i, item in enumerate(manga_table, start=1):
+        name = item.contents[3].a.text
+        link = item.find("a").get("href")
+        manga = Manga(link, name)
+
+        print("Processing", i, "out of", len(manga_table), "\n")
+        
+        manga_list.append(manga)
+    
+    return manga_list
+
+
+def sort_by_score(manga_list):
+    return manga_list.sort(key=lambda x: x.score, reverse=True)
+
+
+def sort_by_ratings(manga_list):
+    return manga_list.sort(key=lambda x: x.rating_count, reverse=True)
+
+
+def sort_by_ranking(manga_list):
+    return manga_list.sort(key=lambda x: x.ranked, reverse=True)
+
+
+def sort_by_favorites(manga_list):
+    return manga_list.sort(key=lambda x: x.favorites, reverse=True)
+
+
+def print_mangas(manga_list):
+    for manga in manga_list:
+        manga.printData()
+        print("")
+
+
+def sorter(choice, manga_list):
+    if choice == "1":
+        sort_by_score(manga_list)
+    
+    if choice == "2":
+        sort_by_ratings(manga_list)
+        
+    if choice == "3":
+        sort_by_ranking(manga_list)
+        
+    if choice == "4":
+        sort_by_favorites(manga_list)
+    
+    if choice == "5":
+        pass
+
+# Testing
+author_url = "https://myanimelist.net/people/2111/Tsugumi_Ohba"
+manga_list = get_mangas(author_url)
+
+print("",
+      "1. Sort by score\n",
+      "2. Sort by amount of ratings\n",
+      "3. Sort by ranking\n",
+      "4. Sort by favorites\n",
+      "5. Exit")
+
+choice = input("\nChoose one: ")
+print()
+
+sorter(choice, manga_list)
+print_mangas(manga_list)

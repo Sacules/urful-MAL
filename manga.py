@@ -15,8 +15,6 @@ class Manga():
             url: MyAnimeList link of the manga's page, must be a string.
         """
 
-        self.name = name
-
         # Get webpage
         r = requests.get(url, headers = {
             'User-agent': 
@@ -25,7 +23,7 @@ class Manga():
 
         # Get the HTML and make it soup
         soup = BeautifulSoup(r.text, "html.parser")
-
+        
         # Seems MAL has a different format for obscure mangas,
         # probably their database updates popular ones more often
         # so these less known ones require a different technique
@@ -50,6 +48,9 @@ class Manga():
         else:
             self.rating_count = int(self.rating_count.text)
         
+        # Set name
+        self.name = name
+        
         # Get ranked position
         self.ranked = int(soup.find("span", string="Ranked:").
                           next_sibling.replace("#", ""))
@@ -59,12 +60,12 @@ class Manga():
                              next_sibling.replace(",", ""))
 
 
-    def printData(self):    
+    def printData(self):
         print("Name:", self.name)
         print("Score:", self.score)
         print("Ratings: {:,}".format(self.rating_count))
         print("Overall ranking: #{:,}".format(self.ranked))
-        print("Favorites: {:,}".format(self.favorites))    
+        print("Favorites: {:,}".format(self.favorites))
 
 
 
