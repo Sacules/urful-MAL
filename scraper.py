@@ -1,5 +1,11 @@
 from manga import *
-import time
+
+HEADERS = "Name,Score,Ratings,Overall ranking,Favorites\n"
+
+
+def get_author(author_url):
+    return author_url.split("/")[-1].replace("_", " ")
+
 
 def get_mangas(author_url):
     # Get webpage
@@ -12,8 +18,8 @@ def get_mangas(author_url):
     content = soup.find(id="content")
     
     # Get the table with mangas
-    manga_table = (content.find(string="Published Manga").parent.next_sibling.
-                  find_all("tr"))
+    manga_table = (content.find(string="Published Manga").parent.
+                   next_sibling.find_all("tr"))
     
     # Initialize
     manga_list = []
@@ -22,10 +28,11 @@ def get_mangas(author_url):
     for i, item in enumerate(manga_table, start=1):
         name = item.contents[3].a.text
         link = item.find("a").get("href")
-        manga = Manga(link, name)
-
+        
         print("Processing", i, "out of", len(manga_table), "\n")
         
+        manga = Manga(link, name)
+
         manga_list.append(manga)
     
     return manga_list
@@ -53,7 +60,21 @@ def print_mangas(manga_list):
         print("")
 
 
-def sorter(choice, manga_list):
+def save_to_excel(author, manga_list, HEADERS):
+    with open(author + ".csv", "w", encoding="utf-8") as file:
+        file.write(HEADERS)
+        
+        for manga in manga_list:
+            file.write(manga.name + "," + 
+                       str(manga.score) + "," +
+                       str(manga.rating_count)  + "," +
+                       str(manga.ranked)  + "," +
+                       str(manga.favorites) + "\n")
+        
+        print("Finished! Saved as", author, ".csv")
+
+
+def sorter(author, choice, manga_list):
     if choice == "1":
         sort_by_score(manga_list)
     
@@ -67,21 +88,30 @@ def sorter(choice, manga_list):
         sort_by_favorites(manga_list)
     
     if choice == "5":
+        save_to_excel(author, manga_list, HEADERS)
+    
+    if choice == "6":
         pass
 
+
 # Testing
-author_url = "https://myanimelist.net/people/2111/Tsugumi_Ohba"
+author_url = "https://myanimelist.net/people/4580/Satoshi_Kon"
+author = get_author(author_url)
 manga_list = get_mangas(author_url)
+
+print_mangas(manga_list)
 
 print("",
       "1. Sort by score\n",
       "2. Sort by amount of ratings\n",
       "3. Sort by ranking\n",
       "4. Sort by favorites\n",
-      "5. Exit")
+      "5. Save to Excel file\n",
+      "6. Exit")
 
 choice = input("\nChoose one: ")
 print()
 
-sorter(choice, manga_list)
+sorter(author, choice, manga_list)
+
 print_mangas(manga_list)
