@@ -63,33 +63,33 @@ def print_mangas(manga_list):
 def save_to_excel(author, manga_list, HEADERS):
     with open(author + ".csv", "w", encoding="utf-8") as file:
         file.write(HEADERS)
-        
+
         for manga in manga_list:
             file.write(manga.name + "," + 
                        str(manga.score) + "," +
                        str(manga.rating_count)  + "," +
                        str(manga.ranked)  + "," +
                        str(manga.favorites) + "\n")
-        
+
         print("Finished! Saved as", author, ".csv")
 
 
 def sorter(author, choice, manga_list):
     if choice == "1":
         sort_by_score(manga_list)
-    
+
     if choice == "2":
         sort_by_ratings(manga_list)
-        
+
     if choice == "3":
         sort_by_ranking(manga_list)
-        
+
     if choice == "4":
         sort_by_favorites(manga_list)
-    
+
     if choice == "5":
         save_to_excel(author, manga_list, HEADERS)
-    
+
     if choice == "6":
         pass
 
@@ -101,17 +101,21 @@ manga_list = get_mangas(author_url)
 
 print_mangas(manga_list)
 
-print("",
-      "1. Sort by score\n",
-      "2. Sort by amount of ratings\n",
-      "3. Sort by ranking\n",
-      "4. Sort by favorites\n",
-      "5. Save to Excel file\n",
-      "6. Exit")
+while True:
+	print("",
+     	 "1. Sort by score\n",
+     	 "2. Sort by amount of ratings\n",
+	 "3. Sort by ranking\n",
+     	 "4. Sort by favorites\n",
+     	 "5. Save to Excel file\n",
+     	 "6. Exit")
 
-choice = input("\nChoose one: ")
-print()
+	choice = input("\nChoose one: ")
+	print()
 
-sorter(author, choice, manga_list)
+	if choice == "6":
+	    break
 
-print_mangas(manga_list)
+	sorter(author, choice, manga_list)
+
+	print_mangas(manga_list)
