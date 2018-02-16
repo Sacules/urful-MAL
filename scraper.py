@@ -1,13 +1,15 @@
 from manga import *
 
-HEADERS = "Name,Score,Ratings,Overall ranking,\
-Favorites,Volumes,Chapters,Status\n"
+HEADERS = "Name,English title,Synonyms,Score,Ratings,\
+Overall ranking,Favorites,Volumes,Chapters,Status\n"
+
 
 def print_welcome():
     print("",
           "Welcome to the unique script that makes MyAnimeList more useful!\n",
           "Inspired by Rateyourmusic and their awesome database functionality\n",
-          "now you can see useful data about your favorite mangakas.\n")
+          "now you can see useful data about your favorite mangakas' work.\n")
+
 
 def get_author(author_url):
     return author_url.split("/")[-1].replace("_", " ")
@@ -27,6 +29,7 @@ def get_manga_table(author_url):
     return (content.find(string="Published Manga").parent.
                    next_sibling.find_all("tr"))
 
+
 def get_manga_list(manga_table, manga_list):
     for i, item in enumerate(manga_table, start=1):
         canonical_link = item.find("a").get("href")
@@ -42,6 +45,8 @@ def get_manga_list(manga_table, manga_list):
         if manga.status_code == 200:
             manga.get_stats()
             manga.save_score_and_scored_by()
+            manga.save_title_English()
+            manga.save_title_synonyms()
             manga.save_other_stats()
             manga_list.append(manga)
         
@@ -55,6 +60,8 @@ def get_manga_list(manga_table, manga_list):
 def show_options(author, manga_list):
     while True:
         print("",
+              "Please note that the sorting options are for testing.\n",
+              "It's recommended you just save the results to an Excel file.\n\n",
               "1. Sort by score\n",
               "2. Sort by amount of ratings\n",
               "3. Sort by ranking\n",
@@ -108,6 +115,8 @@ def save_to_excel(author, manga_list, HEADERS):
         for manga in manga_list:
             try:
                 file.write(manga.title.replace(",", "") + "," + 
+                           manga.title_english + "," +
+                           manga.title_synonyms + "," +
                            str(manga.score) + "," +
                            str(manga.scored_by)  + "," +
                            str(manga.rank)  + "," +
@@ -138,7 +147,7 @@ def sorter(choice, manga_list):
 
 
 # Testing
-author_url = "https://myanimelist.net/people/1867/Naoki_Urasawa"
+author_url = "https://myanimelist.net/people/2410/Junji_Ito"
 author = get_author(author_url)
 
 print_welcome()
