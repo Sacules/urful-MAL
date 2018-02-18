@@ -35,13 +35,13 @@ def get_manga_list(manga_table, manga_list):
         canonical_link = item.find("a").get("href")
         manga_id = canonical_link.split("/")[-2]
         api_url = "https://api.jikan.me/manga/" + manga_id + "/stats"
-        
+
         print("Processing", i, "out of", len(manga_table), "\n")
 
         manga = Manga()
-        
+
         manga.get_page(api_url)
-        
+
         if manga.status_code == 200:
             manga.get_stats()
             manga.save_score_and_scored_by()
@@ -49,12 +49,12 @@ def get_manga_list(manga_table, manga_list):
             manga.save_title_synonyms()
             manga.save_other_stats()
             manga_list.append(manga)
-        
+
         else:
             print("Oops! Error trying to get", canonical_link,
                   "Status code", manga.status_code, "\n")
 
-    return manga_list    
+    return manga_list
 
 
 def show_options(author, manga_list):
@@ -69,19 +69,19 @@ def show_options(author, manga_list):
               "5. Save to Excel file\n",
               "6. Print mangas\n",
               "7. Exit")
-    
+
         choice = input("\nChoose one: ")
         print()
-    
+
         if choice == "5":
             save_to_excel(author, manga_list, HEADERS)
-        
+
         elif choice == "6":
             print_mangas(manga_list)
-            
+
         elif choice == "7":
             break
-    
+
         else:
             sorter(choice, manga_list)
 
