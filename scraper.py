@@ -114,7 +114,7 @@ def save_to_excel(author, manga_list, HEADERS):
 
         for manga in manga_list:
             try:
-                file.write(manga.title.replace(",", "") + "," + 
+                file.write(manga.title.replace(",", "") + "," +
                            manga.title_english + "," +
                            manga.title_synonyms + "," +
                            str(manga.score) + "," +
@@ -147,10 +147,10 @@ def sorter(choice, manga_list):
 
 
 # Testing
-author_url = "https://myanimelist.net/people/2410/Junji_Ito"
-author = get_author(author_url)
-
 print_welcome()
+
+author_url = input("Insert url of author: ")
+author = get_author(author_url)
 
 manga_table = get_manga_table(author_url)
 
